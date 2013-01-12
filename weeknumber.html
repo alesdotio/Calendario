@@ -1,0 +1,46 @@
+<html>
+<head></head>
+<body>
+<div id="calendar" class="calendar">
+	<nav>
+		<a href="#" class="prev" title="{% trans 'Previous' %}"><i class="icon icon-circle-arrow-left"></i></a>
+		<p class="month-year"><span class="month"></span><br/><span class="year"></span></p>
+		<a href="#" class="next" title="{% trans 'Next' %}"><i class="icon icon-circle-arrow-right"></i></a>
+		<a href="#" class="today" title="{% trans 'Today' %}"><i class="icon icon-certificate"></i></a>
+	</nav>
+	<div class="fc-calendar-container"></div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="js/jquery.calendario.js"></script>
+<script>
+	$(document).ready(function(){
+		// calendar
+		var calendar = $('#calendar');
+		var cal = calendar.find('.calendar-container').calendario({
+			onDayClick: function($el, $contentEl, dateProperties) {
+				// example
+			}
+		});
+		var month = calendar.find('.month').html(cal.getMonthName());
+		var year = calendar.find('.year').html(cal.getYear());
+		calendar.find('.next').on('click', function(e) {
+			e.preventDefault();
+			cal.gotoNextMonth(updateMonthYear);
+		});
+		calendar.find('.prev').on('click', function(e) {
+			e.preventDefault();
+			cal.gotoPreviousMonth(updateMonthYear);
+		});
+		calendar.find('.today').on('click', function(e) {
+			e.preventDefault();
+			cal.gotoNow(updateMonthYear);
+		});
+		function updateMonthYear() {
+			month.html(cal.getMonthName());
+			year.html(cal.getYear());
+		}
+	});
+</script>
+</body>
+</html>
