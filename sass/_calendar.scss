@@ -1,0 +1,74 @@
+@mixin partial-calendar() {
+
+$primary: #08c;
+$cal-border-color: #cfcfcf;
+$cal-bg-color: #e1e1e1;
+
+.calendar {
+	background: $cal-bg-color; border-top: 5px solid $primary; width: 249px; position: absolute; z-index: 9999;
+	@include border-radius();
+	nav {
+		background: white; text-align: center; border-bottom: 1px solid #bbb; position: relative; padding: 8px 0 5px 0;
+		p { margin: 0; }
+		.month-year { text-align: center; }
+		.month, .year {
+			padding: 0; margin: 0; line-height: 18px; cursor: pointer;
+			&:hover, &:active, &:focus { text-decoration: underline; }
+		}
+		.month { font-size: 18px; }
+		.year { font-size: 12px; color: #666; }
+		.today, .prev, .next {
+			position: absolute; top: 15px; @include opacity(0.7);
+			&:hover, &:active, &:focus  { @include opacity(1); }
+		}
+		.prev { left: 10px; }
+		.next { right: 10px; }
+		.today { left: 35px; }
+	}
+	.fc-calendar-container { border-top: 1px solid #eee;}
+}
+
+.fc-calendar-container { position: relative; height: 180px; width: 100%; }
+.fc-calendar { width: 100%; height: 100%; }
+.fc-calendar .fc-head { line-height: 30px; height: 30px; font-size: 10px; color: #888; text-align: center; }
+.fc-calendar .fc-body { position: relative; width: 100%; height: 100%; }
+.fc-calendar .fc-row { width: 100%; }
+.fc-four-rows .fc-row { height: 25%; }
+.fc-five-rows .fc-row { height: 20%; }
+.fc-six-rows .fc-row { height: 16.66%; }
+.fc-calendar .fc-row > div, .fc-calendar .fc-head > div { float: left; height: 100%; width: 30px; position: relative;
+	border-left: 1px solid $cal-border-color; }
+.fc-calendar .fc-row > div {
+	position: relative; cursor: pointer; border-top: 1px solid $cal-border-color;
+	&:hover, &:active, &:focus { background: #eee; }
+}
+.fc-calendar .fc-head > div { text-align: center; border-left-color: $cal-bg-color; border-top-color: $cal-bg-color; }
+.fc-calendar .fc-row > div > span.fc-date { display: block; font-size: 12px; line-height: 12px; text-align: right;
+	padding: 20px 5px 5px 5px; @include text-shadow(1px 1px 1px #eee); }
+.fc-calendar .fc-row > div.fc-weeknumber-div {
+	border-top-color: $cal-bg-color;
+	> span.fc-weeknumber { display: block; position: absolute; top: 0; right: -218px; bottom: 0; left: 0;
+		padding: 20px 0 0 12px; font-size: 10px; line-height: 10px;
+		&:hover, &:active, &:focus { background: #eee; }
+		&:last-child { @include border-bottom-radius(); }
+	}
+}
+.fc-four-rows .fc-row > div {
+	> span.fc-date, &.fc-weeknumber-div > span.fc-weeknumber { padding-top: 25px; }
+}
+.fc-five-rows .fc-row > div {
+	> span.fc-date, &.fc-weeknumber-div > span.fc-weeknumber { padding-top: 20px; }
+}
+.fc-six-rows .fc-row > div {
+	> span.fc-date, &.fc-weeknumber-div > span.fc-weeknumber { padding-top: 15px; }
+}
+.fc-calendar .fc-row > div > span.fc-weekday { padding-left: 5px; display: none; }
+.fc-calendar .fc-row > div.fc-today { background: white; }
+.fc-calendar .fc-row > div.fc-out { opacity: 0.6; }
+.fc-calendar .fc-row > div:last-child { border-right: 1px solid $cal-border-color; }
+.fc-calendar .fc-row:last-child > div:first-child { @include border-bottom-left-radius(); }
+.fc-calendar .fc-row:last-child > div:last-child { @include border-bottom-right-radius(); }
+
+
+// end of mixin
+}
