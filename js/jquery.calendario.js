@@ -1,22 +1,22 @@
 /**
- * jquery.calendario.js v1.0.0
+ * jquery.calendario.js v1.0.0a (with custom week number logic)
  * http://www.codrops.com
  *
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * Copyright 2012, Codrops
  * http://www.codrops.com
  */
 ;( function( $, window, undefined ) {
-	
+
 	'use strict';
 
 	$.Calendario = function( options, element ) {
-		
+
 		this.$el = $( element );
 		this._init( options );
-		
+
 	};
 
 	// the options
@@ -39,9 +39,13 @@
 		months : [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
 		monthabbrs : [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
 		// choose between values in options.weeks or options.weekabbrs
-		displayWeekAbbr : false,
+		displayWeekAbbr : true,
 		// choose between values in options.months or options.monthabbrs
 		displayMonthAbbr : false,
+		// show week numbers
+		displayWeekNumber : true,
+		// show week numbers
+		weekNumberLabel : 'W',
 		// left most day in the calendar
 		// 0 - Sunday, 1 - Monday, ... , 6 - Saturday
 		startIn : 1,
@@ -51,7 +55,7 @@
 	$.Calendario.prototype = {
 
 		_init : function( options ) {
-			
+
 			// options
 			this.options = $.extend( true, {}, $.Calendario.defaults, options );
 
@@ -111,7 +115,11 @@
 		_getHead : function() {
 
 			var html = '<div class="fc-head">';
-		
+
+			if (this.options.displayWeekNumber) {
+				html += '<div>'+this.options.weekNumberLabel+'</div>';
+			}
+
 			for ( var i = 0; i <= 6; i++ ) {
 
 				var pos = i + this.options.startIn,
@@ -145,6 +153,11 @@
 			// this loop is for weeks (rows)
 			for ( var i = 0; i < 7; i++ ) {
 
+				// add week number
+				if (this.options.displayWeekNumber) {
+					html += '<div class="fc-weeknumber-div"><span class="fc-weeknumber">'+this._getWeek(new Date(this.year, this.month, day))+'</span></div>'
+				}
+
 				// this loop is for weekdays (cells)
 				for ( var j = 0; j <= 6; j++ ) {
 
@@ -153,7 +166,7 @@
 						inner = '',
 						today = this.month === this.today.getMonth() && this.year === this.today.getFullYear() && day === this.today.getDate(),
 						content = '';
-					
+
 					if ( day <= monthLength && ( i > 0 || j >= p ) ) {
 
 						inner += '<span class="fc-date">' + day + '</span><span class="fc-weekday">' + this.options.weekabbrs[ j + this.options.startIn > 6 ? j + this.options.startIn - 6 - 1 : j + this.options.startIn ] + '</span>';
@@ -192,7 +205,7 @@
 				if (day > monthLength) {
 					this.rowTotal = i + 1;
 					break;
-				} 
+				}
 				else {
 					html += '</div><div class="fc-row">';
 				}
@@ -237,7 +250,7 @@
 		_move : function( period, dir, callback ) {
 
 			if( dir === 'previous' ) {
-				
+
 				if( period === 'month' ) {
 					this.year = this.month > 0 ? this.year : --this.year;
 					this.month = this.month > 0 ? --this.month : 11;
@@ -262,7 +275,46 @@
 			this._generateTemplate( callback );
 
 		},
-		/************************* 
+		_getWeek : function (getdate) {
+			var a, b, c, d, e, f, g, n, s, w;
+
+			var $y = getdate.getFullYear();
+			var $m = getdate.getMonth() + 1;
+			var $d = getdate.getDate();
+
+			if ($m <= 2) {
+				a = $y - 1;
+				b = (a / 4 | 0) - (a / 100 | 0) + (a / 400 | 0);
+				c = ((a - 1) / 4 | 0) - ((a - 1) / 100 | 0) + ((a - 1) / 400 | 0);
+				s = b - c;
+				e = 0;
+				f = $d - 1 + (31 * ($m - 1));
+			} else {
+				a = $y;
+				b = (a / 4 | 0) - (a / 100 | 0) + (a / 400 | 0);
+				c = ((a - 1) / 4 | 0) - ((a - 1) / 100 | 0) + ((a - 1) / 400 | 0);
+				s = b - c;
+				e = s + 1;
+				f = $d + ((153 * ($m - 3) + 2) / 5) + 58 + s;
+			}
+
+			g = (a + b) % 7;
+			d = (f + g - e) % 7;
+			n = (f + 3 - d) | 0;
+
+			if (n < 0) {
+				w = 53 - ((g - s) / 5 | 0);
+			} else if (n > 364 + s) {
+				w = 1;
+			} else {
+				w = (n / 7 | 0) + 1;
+			}
+
+			$y = $m = $d = null;
+
+			return w;
+		},
+		/*************************
 		******PUBLIC METHODS *****
 		**************************/
 		getYear : function() {
@@ -321,68 +373,68 @@
 		}
 
 	};
-	
+
 	var logError = function( message ) {
 
 		if ( window.console ) {
 
 			window.console.error( message );
-		
+
 		}
 
 	};
-	
+
 	$.fn.calendario = function( options ) {
 
 		var instance = $.data( this, 'calendario' );
-		
+
 		if ( typeof options === 'string' ) {
-			
+
 			var args = Array.prototype.slice.call( arguments, 1 );
-			
+
 			this.each(function() {
-			
+
 				if ( !instance ) {
 
 					logError( "cannot call methods on calendario prior to initialization; " +
 					"attempted to call method '" + options + "'" );
 					return;
-				
+
 				}
-				
+
 				if ( !$.isFunction( instance[options] ) || options.charAt(0) === "_" ) {
 
 					logError( "no such method '" + options + "' for calendario instance" );
 					return;
-				
+
 				}
-				
+
 				instance[ options ].apply( instance, args );
-			
+
 			});
-		
-		} 
+
+		}
 		else {
-		
+
 			this.each(function() {
-				
+
 				if ( instance ) {
 
 					instance._init();
-				
+
 				}
 				else {
 
 					instance = $.data( this, 'calendario', new $.Calendario( options, this ) );
-				
+
 				}
 
 			});
-		
+
 		}
-		
+
 		return instance;
-		
+
 	};
-	
+
 } )( jQuery, window );
