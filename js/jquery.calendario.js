@@ -1,5 +1,5 @@
 /**
- * jquery.calendario.js v1.0.0a (with custom week number logic)
+ * jquery.calendario.js v1.0.0b (with custom week number logic)
  * http://www.codrops.com
  *
  * Licensed under the MIT license.
@@ -117,7 +117,7 @@
 			var html = '<div class="fc-head">';
 
 			if (this.options.displayWeekNumber) {
-				html += '<div>'+this.options.weekNumberLabel+'</div>';
+				html += '<div class="fc-week">'+this.options.weekNumberLabel+'</div>';
 			}
 
 			for ( var i = 0; i <= 6; i++ ) {
@@ -165,7 +165,11 @@
 						p = pos < 0 ? 6 + pos + 1 : pos,
 						inner = '',
 						today = this.month === this.today.getMonth() && this.year === this.today.getFullYear() && day === this.today.getDate(),
-						content = '';
+						future = this.year > this.today.getFullYear() ||
+							(this.year === this.today.getFullYear() && this.month > this.today.getMonth()) ||
+							(this.year === this.today.getFullYear() && this.month === this.today.getMonth() && day > this.today.getDate()),
+						content = '',
+						empty = false;
 
 					if ( day <= monthLength && ( i > 0 || j >= p ) ) {
 
@@ -188,11 +192,16 @@
 					}
 					else {
 						today = false;
+						future = false;
+						empty = true;
 					}
 
 					var cellClasses = today ? 'fc-today ' : '';
+					cellClasses += future && !today && !empty ? 'fc-future ' : '';
+					cellClasses += !future && !today && !empty ? 'fc-past ' : '';
+					cellClasses += empty ? 'fc-empty ' : '';
 					if( content !== '' ) {
-						cellClasses += 'fc-content';
+						cellClasses += 'fc-content ';
 					}
 
 					html += cellClasses !== '' ? '<div class="' + cellClasses + '">' : '<div>';
@@ -352,7 +361,7 @@
 
 		},
 		// goes to month/year
-		goto : function( month, year, callback ) {
+		gotoDirect : function( month, year, callback ) {
 
 			this.month = month - 1;
 			this.year = year;
