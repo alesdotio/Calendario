@@ -49,7 +49,8 @@
 		// left most day in the calendar
 		// 0 - Sunday, 1 - Monday, ... , 6 - Saturday
 		startIn : 1,
-		onDayClick : function( $el, $content, dateProperties ) { return false; }
+		onDayClick : function( $el, $content, dateProperties ) { return false; },
+		onCellClick : function( $el, $content, dateProperties ) { return false; }
 	};
 
 	$.Calendario.prototype = {
@@ -87,6 +88,8 @@
 
 				if( dateProp.day ) {
 					self.options.onDayClick( $cell, $content, dateProp );
+				} else {
+					self.options.onCellClick( $cell, $content, dateProp );
 				}
 
 			} );
